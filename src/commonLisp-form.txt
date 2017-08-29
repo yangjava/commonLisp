@@ -1,0 +1,15 @@
+话说在伞哥翻译的《使用Common Lisp编程》里面，原文中的form被翻译为了``形式''。说实在的，这个翻译绝对称不上是传神，但是貌似也很难找到一个更好的词语来表示这个东西了。遇到这种不知道到底应该怎么翻译，甚至到底该不该译的单词，大概是所有翻译人员都会面临的窘境吧。
+
+刚刚闲来无事翻着CLHS来当书看。所谓的CLHS，即Common Lisp Hyper Spec，是一份可以和CLtL类似，相当于语言标准的文档。在其中不仅有对所有Common Lisp提供的标准库函数进行解释，而且还有很多名词解释，当中就有form。form的定义如下：
+
+1. any object meant to be evaluated. 2. a symbol, a compound form, or a self-evaluating object. 3.(for an operator, as in ``<<operator>> form'') a compound form having that operator as its first element. ``A quote form is a constant form.''
+
+首先，form是一个``要被求值''的对象；另外，它可能是一个符号、一个复合的form，或者一个``自求值''的对象；最后那个解释，不好意思，我不太看得懂，就不翻译出来误导大家了→_→
+
+为什么会忽然间琢磨起form的定义呢？是因为在看special operator的相关内容时发现，文档中说special form的subexpressions有至少两种的处理方式——
+
+Each special operator defines the manner in which its subexpressions are treated---which are forms, which are special syntax, etc.
+
+第一种是作为form，那么可以认为这样的子表达式会被求值（因为form的定义）。而第二种方式则是说作为特殊的语法。这个到底是什么意思呢？我也不太清楚，不过我能够想到的一个情况，就是特殊操作符（special operator）tagbody的应用。tagbody的代码体中的所有原子代码都不会被求值，它们会被作为标记（即C语言中给goto用的Label），来为以后可能调用的go提供一个``入口''。显然，这里的原子类型的数据不能被视为form，因为它们**不会被求值**！因此我觉得，它们只能被视为是special syntax了。
+
+呃。。我也不知道自己在写什么……

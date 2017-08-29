@@ -1,0 +1,73 @@
+真与假 (Truth)
+在 Common Lisp 中，符号 t 是表示 真 的缺省值。和 nil 一样， t 也是对自身求值的。如
+果参数是一个列表，则函数 listp 返回 真 ：
+1
+2
+> (listp '(a b c))
+T
+一个函数的返回值打算被解释成 真 或 假 ，则此函数被称为判断式 (predicate)。在
+Common Lisp 中，判断式的名字通常以 p 结尾。
+假 在 Common Lisp 中，用 nil ，即空表来表示。如果我们传给 listp 的参数不是列表，
+则返回 nil 。
+1 > (listp 27)
+12-11-9 Chapter 2 ???? Lisp (W elcom e to Lisp) ρ ANSI Com m on Lisp ?????
+7/24 ansi-com m on-lisp.readthedocs.org/en/latest/zhCN/ch2-cn.htm l
+2 NIL
+因为 nil 在 Common Lisp 中扮演两个角色，如果参数是一个空表，则函数 null 返回 真
+。
+1
+2
+> (null nil)
+T
+而如果参数是 假 ，则函数 not 返回 真 ：
+1
+2
+> (not nil)
+T
+null 与 not 做的是一样的事情。
+在 Common Lisp 中，最简单的条件式是 if 。它通常接受三个参数：一个 test 表达式，一
+个 then 表达式和一个 else 表达式。若 test 表达式被求值为 真 ，则 then 表达式被求值，
+并返回这个值。若 test 表达式为 假 ，则 else 表达式被求值，并返回这个值：
+1
+2
+3
+4
+5
+6
+7
+8
+> (if (listp '(a b c))
+(+ 1 2)
+(+ 5 6))
+3
+> (if (listp 27)
+(+ 1 2)
+(+ 5 6))
+11
+跟 quote 一样， if 是特殊操作符。不能用一个函数来实现，因为函数调用的参数永远会被
+求值，而 if 的特点是只有最后两个参数的其中一个会被求值。 if 的最后一个参数是选择
+性的。如果你忽略它，缺省是 nil ：
+1
+2
+3
+> (if (listp 27)
+(+ 1 2))
+NIL
+虽然 t 是 真 的缺省表示法，任何非 nil 的东西，在逻辑的语意里会被??视为 真 。
+1
+2
+> (if 27 1 2)
+1
+12-11-9 Chapter 2 ???? Lisp (W elcom e to Lisp) ρ ANSI Com m on Lisp ?????
+8/24 ansi-com m on-lisp.readthedocs.org/en/latest/zhCN/ch2-cn.htm l
+逻辑操作符 and 和 or 与条件式 (conditionals) 类似。两者都接受任意数目的参数，但只对
+能够决定返回值的那几个参数来作求值。如果所有的参数都为 真 （即不为 nil )，那么
+and 会返回最后一个参数的值：
+1
+2
+> (and t (+ 1 2))
+3
+如果其中一个参数为 假 ，那么之后的所有参数都不会被求值。 or 也是如此，只要碰到一
+个是 真 的参数，就停止对之后的所有的参数求值。
+这两个操作符称之为宏。跟特殊操作符一样，宏可以绕过一般的求值规则。第十章解释了
+如何编写你自己的宏。

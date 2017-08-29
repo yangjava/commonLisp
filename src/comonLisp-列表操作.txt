@@ -1,0 +1,42 @@
+列表操作 (List Operations)
+用函数 cons 来构造列表。如果传入的第二个参数是一个列表，则返回一个由第二个参数所
+组成的新列表，其中新列表的第一个元素是传入的第一个参数：
+1
+2
+> (cons 'a '(b c d))
+(A B C D)
+我们可以把新元素建立在空表之上来构造新列表。上一节所看到的函数 list 只是一个把几
+个元素加到 nil 上的快捷方式：
+12-11-9 Chapter 2 ???? Lisp (W elcom e to Lisp) ρ ANSI Com m on Lisp ?????
+6/24 ansi-com m on-lisp.readthedocs.org/en/latest/zhCN/ch2-cn.htm l
+1
+2
+3
+4
+> (cons 'a (cons 'b nil))
+(A B)
+> (list a b)
+(A B)
+来取出列表元素的基本函数是 car 和 cdr 。列表的 car 是第一个元素，而列表的 cdr 是第
+一个元素之后的所有元素：
+1
+2
+3
+4
+> (car '(a b c))
+A
+> (cdr '(a b c))
+(B C)
+你可以把 car 与 cdr 混合使用来取得列表中的任何元素。如果我们想要取得第三个元素，
+我们可以：
+1
+2
+> (car (cdr (cdr '(a b c d))))
+C
+不过，你可以用更简单的 third 来做到同样的事情：
+1
+2
+> (third '(a b c d))
+C
+
+
