@@ -1,0 +1,24 @@
+一、条件
+在Lisp中用原子t 表示真，nil表示假。 一般说来，函数名以字母 p 的 lisp 函数用于检验对象具有某种属性。例如，symbolp，listp，keywordp，boundp，fboundp，numberp，typep，oddp，evenp，zerop。
+像这一类返回值为真或假的函数称为微词 predicate 。
+1、typep 用于测试某个对象是否具有指定的类型。
+如：>   (typep 12 'integer) 
+       >    T
+2、用于条件测试的函数包括 eq，，>，<，=  等等。逻辑联结词有 not，and，or 含义分别为非，且，或。
+
+（1）Common Lisp 中最简单的条件操作符是 if，用法如下:  (if test   exp1 exp2) 
+如:> (if (listp (cons 'a nil)) (* 2 3) (* 3 3)) 
+    >  6 
+表达式 exp2 可以省略。但是如果此时 test 值为假，则整个表达式返回 nil。
+> (if (> 3 2) (format nil "   ~A >   ~A" 3 2)) 
+"   3 >   2" 
+> (if (< 3 2) (format nil "   ~A >   ~A" 3 2)) 
+NIL 
+
+需要注意的是，exp1和exp2都是单一表达式。如果需要使用多个表达式完成多个处理，可以使用progn。用法是：
+（progn
+            exp21
+                      exp2
+             ...
+             exp2k)
+它将这k个表达式组合成一个表达式。

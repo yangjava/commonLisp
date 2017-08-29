@@ -1,0 +1,111 @@
+控制流 (Control)
+2.2 节 介绍了 Common Lisp 的求值规则，直到现在你应该很熟悉了。本章的操作符都有一
+个共同点，就是它们都违反了求值规则。他们让你决定在程序当中何时要求值。如果普通
+的函数调用是 Lisp 程序的树叶的话，那这些操作符就是用来构造树枝。
+5.1 区块 (Blocks)
+Common Lisp 有三个构造区块 (block) 的基本操作符： progn , block 以及 tagbody 。我们
+已经看过 progn 了。在 progn 主体中的表达式会依序求值，并返回最後一个表达式的值：
+1
+2
+3
+4
+5
+6
+> (progn
+(format t "a")
+(format t "b")
+(+ 11 12))
+ab
+23
+由於只返回最後一个表达式的值，代表著使用 progn （或任何区块）意味着副作用。
+一个 block 像是带有名字及紧急出口的 progn 。第一个参数应为符号。这变成了区块的名
+字。在主体中的任何地方，你可以停止求值，并透过使用 return-from 指定区块的名字，
+来立即返回一个数值：
+1
+2
+3
+4
+5
+6
+> (block head
+(format t "Here we go.")
+(return-from head 'idea)
+(format t "We'll never see this."))
+Here we go.
+IDEA
+调用 return-from 允许你的程序从代码的任何地方，突然但优雅地退出。第二个传给
+return-from 的参数，用来作为以第一个参数为名的区块的返回值。在 return-from 之後
+的表达式不会被求值。
+也有一个 return 宏，它把传入的参数当做封闭区块 nil 的返回值：
+1
+2
+3
+> (block nil
+(return 27))
+27
+12-11-9 Chapter 5 ??? (Control) ρ ANSI Com m on Lisp ?????
+2/17 ansi-com m on-lisp.readthedocs.org/en/latest/zhCN/ch5-cn.htm l
+许多接受一个表达式主体的 Common Lisp 操作符，皆被隐含在一个叫做 nil 的区块里。
+比如，所有由 do 构造的迭代函数：
+1
+2
+3
+4
+5
+6
+> (dolist (x '(a b c d e))
+(format t "~A " x)
+(if (eql x 'c)
+(return 'done)))
+A B C
+DONE
+使用 defun 定义的函数主体，都被隐含在一个与函数同名的区块，所以你可以：
+1
+2
+(defun foo ()
+(return-from foo 27))
+在一个显式或隐式的 block 外，不论是 return-from 或 return 都不会工作。
+使用 return-from ，我们可以写出一个更好的 read-integer 版本：
+1
+2
+3
+4
+5
+6
+7
+8
+(defun read-integer (str)
+(let ((accum 0))
+(dotimes (pos (length str))
+(let ((i (digit-char-p (char str pos))))
+(if i
+(setf accum (+ (* accum 10) i))
+(return-from read-integer nil))))
+accum))
+68 页的版本在构造整数之前，需要检查所有的字符。现在两个步骤可以结合，因为如果我
+们遇到非数字的字符时，我们可以舍弃计算结果。出现在主体的原子（atom）被解读为标
+签（labels)；把这样的标签传给 go ，会把控制权交给标签後的表达式。以下是一个非常丑
+的程序片段，用来印出一至十的数字：
+1
+2
+3
+4
+5
+6
+7
+8
+> (tagbody
+(setf x 0)
+top
+(setf x (+ x 1))
+(format t "~A " x)
+(if (< x 10) (go top)))
+1 2 3 4 5 6 7 8 9 10
+NIL
+这个操作符主要用来实现其它的操作符，不是你自己会使用的东西。大多数迭代操作符都
+12-11-9 Chapter 5 ??? (Control) ρ ANSI Com m on Lisp ?????
+3/17 ansi-com m on-lisp.readthedocs.org/en/latest/zhCN/ch5-cn.htm l
+有隐含一个 tagbody ，所以可能可以在主体里（虽然很少想要）使用标签及 go 。
+你如何决定要使用哪一个区块建构子（block construct）？几乎任何时候，你会使用 progn
+。如果你想要突然退出的话，使用 block 来取代。多数程序员永远不会显式地使用
+tagbody 。

@@ -1,0 +1,31 @@
+一、顺序结构
+顾名思义，顺序结构中的语句或表达式是按其位置的先后顺序依次执行的，这也是最简单也最容易理解的一种结构。在C语言中，绝大多数代码块(code block)中的代码都是顺序结构的。Common Lisp程序由S-expressions组成，其本质上的执行过程为自左向右的求值过程。不过Common Lisp的代码编排风格会让给大家一种错觉：Common Lisp似乎也是顺序执行的，例如：
+
+;;以下是来自于《Practical Common Lisp》书中的一段代码
+(defun prompt-for-cd ()
+  (make-cd
+     (prompt-read "Title")   
+     (prompt-read "Artist")
+     (or (parse-integer (prompt-read "Rating") :junk-allowed t) 0)
+     (y-or-n-p "Ripped [y/n]: ")))
+
+Common Lisp确实提供了一个Special operator – progn(注意progn不是函数)，可用于在一个代码块中真正顺序地执行一组表达式。其语法形式如下：
+(progn
+    (form-1)
+    (form-2)
+    .
+    .
+    .
+    (form-N))
+
+Common Lisp会顺序地执行form-1，form-2，…. form-N，并将最后一个表达式form-N的求值结果作为progn的返回值，例如：
+[1]> (progn
+        (print "hello world")
+        (print "hello lisp")
+        (print "hello graham"))
+"hello world"
+"hello lisp"
+"hello graham"
+"hello graham"
+
+最后的"hello gramham"即为progn的返回值，并被顶层环境再次输出。progn的行为让我想起了C语言中的逗号表达式"expr1, expr2, … , exprn"，与progn一样，逗号表达式也是依次执行expr1，expr2，…，并返回最后一个expression的值。
