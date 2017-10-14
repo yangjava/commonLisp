@@ -1,0 +1,101 @@
+(defun c:j-h0-as() 
+ ;计算独立基础抗冲切,配筋计算
+ (setvar "blipmode" 0)
+ (setvar "cmdecho" 0) 
+ (setq oer *error* *error* clmerr)
+ (setq temp (getstring "是否看图例(Y/N):<N>")
+       yy (if (= temp "") "N" temp)
+ ) ;setq end
+ (if (or (= yy "y") (= yy "Y"))
+   (progn
+      (princ "请输入图例插入点:")
+      (setq  lx 4800 ly 4900)
+      (command "insert" "border" "x" lx "y" ly "r" 0 pause)
+      (command "erase" "l" "")
+      (setq p0 (getvar "lastpoint")
+            p1 (polar p0 0 lx)
+            p1 (polar p1 pi09 ly) 
+       ) ;setq end
+      (command "insert" "独基图例" p0 1 1 0)
+      (command "zoom" "w" p0 p1)
+      (getstring "\n按回车键结束")
+      (command "zoom" "p")
+      (command "erase" "l" "")
+   ) ;progn end
+ );if end
+ (textscr)
+ (setq c (if (setq temp (getreal "砼强度等级:<20>"))  temp 20)) 
+ (princ "柱宽为与基础宽平行的柱边")
+ (princ "柱宽,柱高(bz,hz)(m):")
+ (setq scale 1)
+  (load "tab.lsp")
+  (setq l-l (readlh)
+        bz (nth 0 l-l)
+        hz (nth 1 l-l)
+  ) ;setq end
+ (princ "基础长,基础宽(Hj,Bj)(m):")
+  (setq l-l (readlh)
+        Hj (nth 0 l-l)
+        Bj (nth 1 l-l)
+        h (getreal "基础高(h):(m)")
+        ps (getreal "基底反力(KN/m2):")
+        h0 (- h 0.035)
+  ) ;setq end        
+
+ (cond
+   ((= c 10) (setq ft 0.65))
+   ((= c 15) (setq ft 0.9))
+   ((= c 20) (setq ft 1.1))
+   ((= c 25) (setq ft 1.3))
+   ((= c 30) (setq ft 1.5))
+   ((= c 35) (setq ft 1.65))
+   ((= c 40) (setq ft 1.8))
+   ((= c 45) (setq ft 1.9))
+   ((= c 50) (setq ft 2.0))
+ ) ;cond end
+ (setq bm (+ bz h0)
+       FLL (* 0.6 ft bm h0 1000)
+       l1 (- (+ Hj bz) (+ Bj hz))
+       l1 (/ l1 2.0)
+       l2 (/ (- Bj bz) 2.0)
+       l2 (- l2 h0)
+       bm1 (+ bz (* 2 h0))
+       area1 (* Bj l1)
+       area2 (* (+ Bj bm1) l2 0.5)
+       area (+ area1 area2)
+       FL (* ps area)
+       str1 (if (< FL FLL) "<" ">")
+       str2 (if (< FL FLL) "  合格!"  " h不够！加大h")
+       str3 (rtos FL 2 2)
+       str4 (rtos FLL 2 2)
+       str (strcat "FL=ps*A=" str3 str1 "0.6*ft*bm*h0=" str4 str2)
+ ) ;setq end
+ (princ str)
+ (setq yn (getstring "\n是否接着计算基础配筋(Y/N):<Y>")
+       yn (if (= yn "") "y" yn)
+ ) ;setq end
+ (if (or (= yn "y") (= yn "Y"))
+   (progn  
+    (setq pj (getreal "基底净反力(KN/m2):")
+           gj (if (setq temp (getreal "钢筋等级:<2>"))  temp 2)
+           fy (if (= gj 1) 210 310) 
+           a1 (* (- Hj hz) (- Hj hz))
+           a2 (+ (* 2 Bj) bz)
+           Mi (* a1 a2 pj (/ 1 24.0))
+           as1 (/ (* Mi 1000) (* 0.9 h0 fy Bj))
+           str5 (strcat "MI=" (rtos Mi 2 1) "(KN-m)" "  asI=" (rtos as1 2 1) "(mm2/m)")
+           a1 (* (- Bj bz) (- Bj bz))
+           a2 (+ (* 2 Hj) hz)
+           Mii (* a1 a2 pj (/ 1 24.0))
+           as2 (/ (* 1000 Mii) (* 0.9 h0 fy Hj))
+           str6 (strcat "\nMII=" (rtos Mii 2 1) "(KN-m)" "  asII=" (rtos as2 2 1) "(mm2/m)")
+    ) ;setq end
+    (princ str5)
+    (princ str6)
+    (princ "\n")
+   ) ;progn end
+ ) ;if end(setq scale (getvar "userr1"))
+ (setvar "cmdecho" 0) 
+) ;defun end
+
+      

@@ -1,0 +1,17 @@
+(defun C:chwid(/ ss txsize n index ent type oldsize newsize ent1)
+ (setq ss (ssget))
+ (setq n (sslength ss))
+ (setq index 0)
+ (setvar "cmdecho" 0)
+ (repeat n
+  (setq name (ssname ss index)
+      ent (entget name)
+  ) ;setq end
+  (setq index (+ 1 index))
+  (setq type (assoc 0 ent))
+  (if (= "CIRCLE" (cdr type))
+   (command "erase" name "" "p" "la" "rei" "")
+  )
+ )
+ (setvar "cmdecho" 1)
+) 
